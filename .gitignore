@@ -53,3 +53,12 @@ dkms.conf
 
 CMakeLists.txt
 /cmake-build-debug
+
+.idea
+
+/obj
+/bin
+
+juego-de-la-vida.cbp
+juego-de-la-vida.depend
+juego-de-la-vida.layout
