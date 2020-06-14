@@ -104,7 +104,90 @@ void gClasico(int **matrizN,int **matrizC,int filas,int columnas){
 
 }
 
-/* Automatas
+void gHorizontal(int **matrizN,int **matrizC,int filas,int columnas){
+    limpiarMatriz(matrizN,filas,columnas);
+    int vivosN;
+
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j) {
+            vivosN=0;
+
+            if((i!=0)&&(i!=filas-1)&&(j!=0)&&(j!=columnas-1)){
+                vivosN = matrizC[i-1][j-1] + matrizC[i-1][j] + matrizC[i-1][j+1] + matrizC[i][j-1] + matrizC[i][j+1] + matrizC[i+1][j+1] + matrizC[i+1][j] + matrizC[i+1][j-1];
+            }else if((i==0)&&(j==0)){
+                vivosN = matrizC[i][j+1] + matrizC[i+1][j+1] + matrizC[i+1][j] + matrizC[filas-1][j] + matrizC[filas-1][j+1];
+            }else if((i==0)&&(j==columnas-1)){
+                vivosN = matrizC[i][j-1] + matrizC[i+1][j-1] + matrizC[i+1][j] + matrizC[filas-1][j] + matrizC[filas-1][j-1];
+            }else if((i==filas-1)&&(j==columnas-1)){
+                vivosN= matrizC[i][j-1] + matrizC[i-1][j-1] + matrizC[i-1][j] + matrizC[0][j] + matrizC[0][j-1];
+            }else if((i==filas-1)&&(columnas==0)){
+                vivosN = matrizC[i-1][j]+matrizC[i-1][j+1]+matrizC[i][j+1] + matrizC[0][j] + matrizC[0][j+1];
+            }else if(i==0){
+                vivosN = matrizC[i][j-1]+matrizC[i][j+1]+matrizC[i+1][j-1]+matrizC[i+1][j+1]+matrizC[i+1][j]+matrizC[filas-1][j]+matrizC[filas-1][j+1]+matrizC[filas-1][j-1];
+            }else if(i==filas-1){
+                vivosN = matrizC[i][j-1]+matrizC[i][j+1]+matrizC[i-1][j-1]+matrizC[i-1][j]+matrizC[i-1][j+1]+matrizC[0][j]+matrizC[0][j+1]+matrizC[0][j-1];
+            }else if(j==0){
+                vivosN = matrizC[i-1][j]+matrizC[i+1][j]+matrizC[i+1][j+1]+matrizC[i][j+1]+matrizC[i-1][j+1];
+            }else if(j==columnas-1){
+                vivosN = matrizC[i-1][j] + matrizC[i+1][j] + matrizC[i-1][j-1] + matrizC[i][j-1] + matrizC[i+1][j-1];
+            }
+
+            if((matrizC[i][j]==0)&&(vivosN==3))
+                matrizN[i][j] = 1;
+
+            if((matrizC[i][j]==1)&&((vivosN<2)||(vivosN>3)))
+                matrizN[i][j] = 0;
+            else if(matrizC[i][j]==1)
+                matrizN[i][j] = 1;
+
+        }
+    }
+}
+
+void gVertical(int **matrizN,int **matrizC,int filas,int columnas){
+
+    limpiarMatriz(matrizN,filas,columnas);
+    int vivosN;
+
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j) {
+            vivosN=0;
+
+            if((i!=0)&&(i!=filas-1)&&(j!=0)&&(j!=columnas-1)){
+                vivosN = matrizC[i-1][j-1] + matrizC[i-1][j] + matrizC[i-1][j+1] + matrizC[i][j-1] + matrizC[i][j+1] + matrizC[i+1][j+1] + matrizC[i+1][j] + matrizC[i+1][j-1];
+            }else if((i==0)&&(j==0)){
+                vivosN = matrizC[i][j+1] + matrizC[i+1][j+1] + matrizC[i+1][j]+matrizC[i][columnas-1]+matrizC[i+1][columnas-1];
+            }else if((i==0)&&(j==columnas-1)){
+                vivosN = matrizC[i][j-1] + matrizC[i+1][j-1] + matrizC[i+1][j] + matrizC[i][0] + matrizC[i+1][0];
+            }else if((i==filas-1)&&(j==columnas-1)){
+                vivosN= matrizC[i][j-1] + matrizC[i-1][j-1] + matrizC[i-1][j] + matrizC[i][0] + matrizC[i-1][0];
+            }else if((i==filas-1)&&(columnas==0)){
+                vivosN = matrizC[i-1][j]+matrizC[i-1][j+1]+matrizC[i][j+1]+matrizC[i][columnas-1]+matrizC[i-1][columnas-1];
+            }else if(i==0){
+                vivosN = matrizC[i][j-1]+matrizC[i][j+1]+matrizC[i+1][j-1]+matrizC[i+1][j+1]+matrizC[i+1][j];
+            }else if(i==filas-1){
+                vivosN = matrizC[i][j-1]+matrizC[i][j+1]+matrizC[i-1][j-1]+matrizC[i-1][j]+matrizC[i-1][j+1];
+            }else if(j==0){
+                vivosN = matrizC[i-1][j]+matrizC[i+1][j]+matrizC[i+1][j+1]+matrizC[i][j+1]+matrizC[i-1][j+1]+matrizC[i][columnas-1]+matrizC[i-1][columnas-1]+matrizC[i+1][columnas-1];
+            }else if(j==columnas-1){
+                vivosN = matrizC[i-1][j]+matrizC[i+1][j]+matrizC[i-1][j-1]+matrizC[i][j-1]+matrizC[i+1][j-1]+matrizC[i][0]+matrizC[i+1][0]+matrizC[i-1][0];
+            }
+
+            if((matrizC[i][j]==0)&&(vivosN==3))
+                matrizN[i][j] = 1;
+
+            if((matrizC[i][j]==1)&&((vivosN<2)||(vivosN>3)))
+                matrizN[i][j] = 0;
+            else if(matrizC[i][j]==1)
+                matrizN[i][j] = 1;
+
+        }
+    }
+
+}
+
+
+/* Automatas para probar
 
   000000000
   000000000
