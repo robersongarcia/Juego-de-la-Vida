@@ -32,17 +32,17 @@ void liberarMatriz(int **matriz,int filas){
     free(matriz);
 }
 
-void mostrarMatriz(int **matriz,int filas, int columnas){
+void mostrarMatriz(int **matrizCla,int **matrizHor,int **matrizVer,int filas, int columnas){
 
     for (int i = 0; i < filas; ++i) {
         for (int j = 0; j < columnas; ++j)
-            printf("|%d",matriz[i][j]);
+            matrizCla[i][j]?printf("|*"):printf("| ");
         printf("|     ");
         for (int j = 0; j < columnas; ++j)
-            printf("|%d",matriz[i][j]);
+            matrizHor[i][j]?printf("|*"):printf("| ");
         printf("|     ");
         for (int j = 0; j < columnas; ++j)
-            printf("|%d",matriz[i][j]);
+            matrizVer[i][j]?printf("|*"):printf("| ");
         printf("|\n");
     }
     printf("\n");
@@ -217,23 +217,60 @@ void gVertical(int **matrizN,int **matrizC,int filas,int columnas){
   0000000000000
   0000000000000
 
+  000000000000000000000000
+  000000000000000000000000
+  010010000000000000000000    cadena: 000000000000000000000000000000000000000000000000010010000000000000000000000001000000000000000000010001000000000000000000001111000000000000000000000000000000000000000000000000000000000000000000
+  000001000000000000000000
+  010001000000000000000000
+  001111000000000000000000
+  000000000000000000000000    nave espacial hacia la derecha  8 filas  24 columnas
+  000000000000000000000000
+
+
+
+  00000000000000000000
+  00000000101000000000
+  00000001000000000000
+  00000001000000000000
+  00000001001000000000  cadena: 0000000000000000000000000000101000000000000000010000000000000000000100000000000000000001001000000000000000011100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+  00000001110000000000
+  00000000000000000000
+  00000000000000000000
+  00000000000000000000
+  00000000000000000000  nave espacial hacia abajo  11 x 20
+  00000000000000000000
+
  */
 
 int main(int argc, char const *argv[])
 {
 
-    char cadena[255] = "0000000000000000000000000000000000000000000000000000000000000000000000010000000000011100000000001010000000000010000000000000000000000000000000000000000000000000000000000";
-    int filas=13,columnas=13,cont=1;
+    char cadena[255] = "0000000000000000000000000000101000000000000000010000000000000000000100000000000000000001001000000000000000011100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+    int filas=11,columnas=20,cont=1,nGeneraciones=50;
 
-    int **matriznueva = crearMatriz(filas,columnas);
-    int **matrizact = crearMatriz(filas,columnas);
-    llenarMatriz(matrizact,filas,columnas,cadena);
+    int **matrizCla = crearMatriz(filas,columnas);
+    int **matrizHor = crearMatriz(filas,columnas);
+    int **matrizVer = crearMatriz(filas,columnas);
+    int **matrizAux = crearMatriz(filas,columnas);
 
-    while (cont<=18){
-        mostrarMatriz(matrizact,filas,columnas);
+    llenarMatriz(matrizCla,filas,columnas,cadena);
+    llenarMatriz(matrizHor,filas,columnas,cadena);
+    llenarMatriz(matrizVer,filas,columnas,cadena);
+    llenarMatriz(matrizAux,filas,columnas,cadena);
+
+    while (cont<=nGeneraciones){
+        mostrarMatriz(matrizCla,matrizHor,matrizVer,filas,columnas);
         printf("Generación %i\n\n",cont++);
-        gClasico(matriznueva,matrizact,filas,columnas);
-        copiarMatriz(matrizact,matriznueva,filas,columnas);
+
+        copiarMatriz(matrizAux,matrizCla,filas,columnas);
+        gClasico(matrizCla,matrizAux,filas,columnas);
+
+        copiarMatriz(matrizAux,matrizHor,filas,columnas);
+        gHorizontal(matrizHor,matrizAux,filas,columnas);
+
+        copiarMatriz(matrizAux,matrizVer,filas,columnas);
+        gVertical(matrizVer,matrizAux,filas,columnas);
+
         usleep(5000*1000);
     }
 
