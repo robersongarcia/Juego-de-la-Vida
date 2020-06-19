@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 // Un milisegundo son 1000 microsegundos usleep() usa microsegundos
 // segundos a milisegundos x1000
@@ -187,6 +188,190 @@ void gVertical(int **matrizN,int **matrizC,int filas,int columnas){
 }
 
 
+void crearArchivos(){
+    fopen("clasico.txt","w");
+    fopen("horizontal.txt","w");
+    fopen("vertical.txt","w");
+}
+
+void llenarArchivos(int **matrizCla,int **matrizHor,int **matrizVer,int filas,int columnas,int gen){
+    FILE *pArchivoCla = fopen("clasico.txt","a");
+    FILE *pArchivoHor = fopen("horizontal.txt","a");
+    FILE *pArchivoVer = fopen("vertical.txt","a");
+
+    for (int i = 0; i < filas; ++i) {
+        for (int j = 0; j < columnas; ++j){
+            matrizCla[i][j] ? fprintf(pArchivoCla,"|*") : fprintf(pArchivoCla,"| ");
+            matrizHor[i][j] ? fprintf(pArchivoHor,"|*") : fprintf(pArchivoHor,"| ");
+            matrizVer[i][j] ? fprintf(pArchivoVer,"|*") : fprintf(pArchivoVer,"| ");
+        }
+        fprintf(pArchivoVer,"|\n");
+        fprintf(pArchivoHor,"|\n");
+        fprintf(pArchivoCla,"|\n");
+    }
+    fprintf(pArchivoCla,"Generacion %i\n\n",gen);
+    fprintf(pArchivoHor,"Generacion %i\n\n",gen);
+    fprintf(pArchivoVer,"Generacion %i\n\n",gen);
+
+    fclose(pArchivoCla);
+    fclose(pArchivoHor);
+    fclose(pArchivoVer);
+}
+
+int validacion(char * cadena)
+{
+    int c,j,opcion,bandera,cont;
+
+    if (cadena[0]=='{')
+    {
+        opcion=0;
+        cont=1;
+        c=1;
+        while(c<strlen(cadena))
+        {
+            switch (opcion)
+            {
+                case 0:
+                    if ((cadena[c]!='0')&&(cadena[c]!='1')&&(cadena[c]!='{')) return 0;
+                    opcion=1;
+                    if (cadena[c]=='{'){
+                        cont++;
+                        opcion=0;
+                        bandera=0;
+                        if (cont==3) return 0;
+                    }else
+                        bandera=1;
+                    break;
+
+                case 1:
+                    if ((cadena[c]!=',')&&(cadena[c]!='}')) return 0;
+                    if (cadena[c]=='}'){
+                        cont--;
+                        if (cont<0) return 0;
+                    }
+                    if (cadena[c]==',')
+                        opcion=2;
+                    else
+                        opcion=3;
+
+                    break;
+
+                case 2:
+                    if ((cadena[c]!='0')&&(cadena[c]!='1')&&(cadena[c]!='{'))
+                        return 0;
+
+                    if((bandera==1)&&(cadena[c]=='{'))
+                        return 0;
+
+                    if (cadena[c]=='{'){
+                        opcion=0;
+                        cont++;
+                        if (cont==3) return 0;
+                    }
+                    else
+                        opcion=1;
+
+                    break;
+
+                case 3:
+                    if ((cadena[c]!=',')&&(cadena[c]!='}')) return 0;
+                    if (cadena[c]=='}'){
+                        cont--;
+                        if (cont<0) return 0;
+                        opcion=3;
+                    }
+                    else
+                        opcion=2;
+
+                    break;
+            }
+            c++;
+        }
+        if (cont!=0) return 0;
+    }
+    else return 0;
+
+    c = cont = 0;
+
+    for (j=0; cadena[j]!='\0';j++)
+    {
+        if (cadena[j] == '{')
+            c++;
+        if (cadena[j] == '}')
+            cont++;
+
+        if(cont>c)
+            return 0;
+    }
+
+    if (cont == c)
+        return 1;
+    else
+        return 0;
+
+}
+char *filasColumnas(int*filas,int*columnas,char*cadena)
+{
+    int a=0,b=0,i;
+    char aux[300],*n;
+
+    for(i=0;cadena[i]!='}';i++){
+        if ((cadena[i]=='0')||(cadena[i]=='1'))
+            a++;
+    }
+    *columnas=a;
+    a=0;
+
+    if (i==strlen(cadena)-1)
+        *filas=1;
+    else{
+        for(i=0;i<(strlen(cadena)-1);i++){
+            if (cadena[i]=='}') a++;
+        }
+        *filas=a;
+    }
+    a=0;
+
+    for (i=0;(cadena[i]!='1')&&(cadena[i]!='0');i++);
+    b=i;
+
+    if (cadena[i]=='1')
+        strcpy(aux,"1");
+    else
+        strcpy(aux,"0");
+
+    b++;
+
+    if (*filas==1){
+        for(i=b;i<(strlen(cadena)-1);i++){
+            if (cadena[i]=='0'){
+                a++;
+                strcat(aux,"0");
+            }
+            if (cadena[i]=='1'){
+                a++;
+                strcat(aux,"1");
+            }
+        }
+    }
+    else{
+        for(i=b;i<(strlen(cadena)-2);i++){
+            if (cadena[i]=='0'){
+                a++;
+                strcat(aux,"0");
+            }
+            if (cadena[i]=='1'){
+                a++;
+                strcat(aux,"1");
+            }
+        }
+    }
+
+    n=(char*)malloc(a*sizeof(char));
+    strcpy(n,aux);
+    return n;
+}
+
 /* Automatas para probar
 
   000000000
@@ -245,8 +430,11 @@ void gVertical(int **matrizN,int **matrizC,int filas,int columnas){
 int main(int argc, char const *argv[])
 {
 
-    char cadena[255] = "0000000000000000000000000000101000000000000000010000000000000000000100000000000000000001001000000000000000011100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
-    int filas=11,columnas=20,cont=1,nGeneraciones=50;
+    char *cadena;
+    int filas,columnas,cont,nGeneraciones;
+
+
+
 
     int **matrizCla = crearMatriz(filas,columnas);
     int **matrizHor = crearMatriz(filas,columnas);
@@ -257,10 +445,12 @@ int main(int argc, char const *argv[])
     llenarMatriz(matrizHor,filas,columnas,cadena);
     llenarMatriz(matrizVer,filas,columnas,cadena);
     llenarMatriz(matrizAux,filas,columnas,cadena);
+    crearArchivos();
 
     while (cont<=nGeneraciones){
         mostrarMatriz(matrizCla,matrizHor,matrizVer,filas,columnas);
-        printf("Generación %i\n\n",cont++);
+        printf("Generación %i\n\n",cont);
+        llenarArchivos(matrizCla,matrizHor,matrizVer,filas,columnas,cont++);
 
         copiarMatriz(matrizAux,matrizCla,filas,columnas);
         gClasico(matrizCla,matrizAux,filas,columnas);
